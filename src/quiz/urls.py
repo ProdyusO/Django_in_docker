@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import ExamListView, ExamDetailView, ExamResultCreateView, ExamQuestionView, ExamResultDetailView, \
-ExamResultUpdateView, ExamResultDeleteView, ExamResultListView
+    ExamResultUpdateView, ExamResultDeleteView, ExamResultListView
 
 app_name = 'quizzes'
 

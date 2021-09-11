@@ -97,3 +97,6 @@ class Result(BaseModel):
             return 0
         else:
             return self.num_correct_answers - self.num_incorrect_answers
+
+    def __str__(self):
+        return f'{self.user}: {self.exam} {self.num_correct_answers} {self.num_incorrect_answers}'
