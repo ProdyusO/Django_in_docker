@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 from celery.schedules import crontab
-import core.tasks
+from core.tasks import send_email_report, send_new_user
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'dhdg456')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get('DEBUG', default=True))
+DEBUG = bool(os.environ.get('DEBUG', default=False))
 
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '').split()
 
@@ -76,20 +76,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'app.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
     "default": {
-        "ENGINE": os.environ.get("POSTGRES_ENGINE", ''),
-        "HOST": os.environ.get("POSTGRES_HOST", ''),
-        "PORT": os.environ.get("POSTGRES_PORT", ''),
-        "NAME": os.environ.get("POSTGRES_DB", ''),
-        "USER": os.environ.get("POSTGRES_USER", ''),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD",''),
+        "ENGINE": os.environ.get("POSTGRES_ENGINE", "django.db.backends.postgresql_psycopg2"),
+        "HOST": os.environ.get("POSTGRES_HOST", ""),
+        "PORT": os.environ.get("POSTGRES_PORT", ""),
+        "NAME": os.environ.get("POSTGRES_DB", "quiz"),
+        "USER": os.environ.get("POSTGRES_USER", "postgres"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
     }
 }
+
 
 
 # Password validation
@@ -154,7 +154,7 @@ DEFAULT_FROM_EMAIL = "noreply@test.com"
 ADMINS = [("testuser", "test_admin@test.com"), ]
 
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "amqp://rabbitmq:5672")
-#CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "redis://redis:6379/0")
 
 CELERY_BEAT_SCHEDULE = {
     "sample_task": {
@@ -163,6 +163,10 @@ CELERY_BEAT_SCHEDULE = {
     },
     "send_email_report": {
         "task": "core.tasks.send_email_report",
+        "schedule": crontab(minute="*/1"),
+    },
+    "send_new_user": {
+        "task": "core.tasks.send_new_user",
         "schedule": crontab(minute="*/1"),
     },
 }

@@ -21,7 +21,7 @@ services:
 
 # database
   db:
-    image: postgres:12.0-alpine
+    image: postgres:12.1-alpine
     container_name: db_service
     volumes:
       - postgres_data:/var/lib/postgresql/data/
@@ -42,9 +42,10 @@ services:
     depends_on:
       - web
 
-# broker
+ #broker
   rabbitmq:
     image: rabbitmq:3.9.5-alpine
+    container_name: brocker_service
     ports:
       - "5672:5672"
     env_file:
@@ -94,8 +95,8 @@ volumes:
     name: static_data_volume
   media_volume:
     name: media_data_volume
-# src_volume:
-#    name: source_code_volume
+## src_volume:
+##    name: source_code_volume
   rabbit_volume:
     name: rabbit_data_volume
   redis_volume:
