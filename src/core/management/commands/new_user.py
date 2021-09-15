@@ -1,12 +1,17 @@
-from datetime import timedelta, time, datetime
+from datetime import datetime, time, timedelta
 
-from django.core.mail import mail_admins
+
+from app import settings
+from django.core.mail import send_mail, mail_admins
 from django.core.management import BaseCommand
 from django.utils import timezone
 from django.utils.timezone import make_aware
 
-from quiz.models import Result
 from accounts.models import CustomUser
+from quiz.models import Result
+today = timezone.now()
+
+
 
 today = timezone.now()
 tomorrow = today + timedelta(1)
@@ -23,9 +28,15 @@ class Command(BaseCommand):
 
         for user in users:
             if not result:
-                subject = ('Exam')
-                message = f"Dear {user}, You have to do any exam till midnight"
+                subject = 'Exam'
+                message = f'Dear {user}, You have to do any exam till midnight'
                 mail_admins(subject=subject, message=message, html_message=None)
+                from_email = settings.DEFAULT_FROM_EMAIL
+                recipient_list = user.email
+                send_mail(
+                    subject, message, from_email,
+                    recipient_list, fail_silently=False
+                )
 
                 self.stdout.write("E-mail to the student sent")
             else:
